@@ -162,6 +162,6 @@ create policy approvals_open_insert on public.approvals for insert with check (t
 create policy events_open_insert on public.share_events for insert with check (true);
 
 insert into storage.buckets (id, name, public) values ('files', 'files', false) on conflict (id) do nothing;
-create policy storage_files_read_owner on storage.objects for select using (bucket_id='files' and (auth.uid()::text = owner or exists(select 1 from public.files f where f.storage_path=name and (f.owner_id=auth.uid() or (f.team_id is not null and public.is_team_member(f.team_id))))));
+create policy storage_files_read_owner on storage.objects for select using (bucket_id='files' and (auth.uid() = owner or exists(select 1 from public.files f where f.storage_path=name and (f.owner_id=auth.uid() or (f.team_id is not null and public.is_team_member(f.team_id))))));
 create policy storage_files_insert_authed on storage.objects for insert with check (bucket_id='files' and auth.role()='authenticated');
 create policy storage_files_delete_owner on storage.objects for delete using (bucket_id='files' and exists(select 1 from public.files f where f.storage_path=name and f.owner_id=auth.uid()));
